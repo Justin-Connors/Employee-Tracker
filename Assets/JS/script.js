@@ -25,6 +25,7 @@ const menu = async () => {
             viewDepartments();
             break;
         case 'viewRoles':
+            viewRoles();
             break;
         case 'viewEmployees':
             break;
@@ -46,9 +47,20 @@ const menu = async () => {
       }
 };
 
-//View departments
+// View departments
 const viewDepartments = async () => {
     const [rows] = await sequelize.query('SELECT * FROM departments');
+    console.table(rows);
+    menu();
+}
+
+// View all roles
+const viewRoles = async () => {
+    const [rows] = await sequelize.query(`
+        SELECT roles.id, roles.title, roles.salary, departments.name AS department
+        FROM roles
+        JOIN departments ON roles.department_id = departments.id
+    `);
     console.table(rows);
     menu();
 }

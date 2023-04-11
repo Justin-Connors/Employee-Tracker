@@ -31,6 +31,7 @@ const menu = async () => {
             viewEmployees();
             break;
         case 'addDepartment':
+            addDepartment();
             break;
         case 'addRole':
             break;
@@ -76,6 +77,18 @@ const viewEmployees = async () => {
         LEFT JOIN employees managers ON employees.manager_id = managers.id
     `)
     console.table(rows);
+    menu();
+}
+
+// Add a department
+const addDepartment = async () => {
+    const { name } = await inquirer.prompt({
+        type: 'input',
+        name: 'name',
+        message: 'Enter a name for the Department',
+    });
+    await sequelize.query('INSERT INTO departments (name) VALUES (?)', {replacements: [name]});
+    console.log('Department has been added!');
     menu();
 }
 

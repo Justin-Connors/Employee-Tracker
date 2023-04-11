@@ -28,6 +28,7 @@ const menu = async () => {
             viewRoles();
             break;
         case 'viewEmployees':
+            viewEmployees();
             break;
         case 'addDepartment':
             break;
@@ -61,6 +62,19 @@ const viewRoles = async () => {
         FROM roles
         JOIN departments ON roles.department_id = departments.id
     `);
+    console.table(rows);
+    menu();
+}
+
+// View all employees
+const viewEmployees = async () => {
+    const [rows] = await sequelize.query(`
+        SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.name AS department, roles.salary, CONCAT(managers.first_name,' ', managers.last_name) AS manager
+        FROM employees
+        JOIN roles ON employees.role_id = roles.id
+        JOIN departments ON roles.department_id = departments.id
+        LEFT JOIN employees managers ON employees.manager_id = managers.id
+    `)
     console.table(rows);
     menu();
 }

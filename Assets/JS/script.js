@@ -34,6 +34,7 @@ const menu = async () => {
             addDepartment();
             break;
         case 'addRole':
+            addRole();
             break;
         case 'addEmployee':
             break;
@@ -85,11 +86,45 @@ const addDepartment = async () => {
     const { name } = await inquirer.prompt({
         type: 'input',
         name: 'name',
-        message: 'Enter a name for the Department',
+        message: 'Enter a name for the Department'
     });
     await sequelize.query('INSERT INTO departments (name) VALUES (?)', {replacements: [name]});
     console.log('Department has been added!');
     menu();
 }
+
+// Add a role
+const addRole = async () => {
+    const departments = await sequelize.query('SELECT * FROM departments');
+    const { title, salary, department_id } = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: 'Enter the title of the role'
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'Enter the salary of the role'
+        },
+        {
+            type: 'list',
+            name: 'department_id',
+            message: 'Select the department for the role:',
+            choices: departments[0].map((department) => ({
+                name: department.name,
+                value: department.id
+            }))
+        }
+    ]);
+    await sequelize.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)',
+    {
+        replacements: [title, salary, department_id]
+    });
+    console.log('Role added successfully.');
+    menu();
+}
+
+// Add an employee
 
 menu();

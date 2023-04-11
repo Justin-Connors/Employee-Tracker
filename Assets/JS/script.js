@@ -40,6 +40,7 @@ const menu = async () => {
             addEmployee();
             break;
         case 'updateEmployeeRole':
+            updateEmployeeRole();
             break;
         case 'exit':
             console.log('Goodbye!');
@@ -173,6 +174,41 @@ const addEmployee = async () => {
     await sequelize.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
     { replacements: [first_name, last_name, role_id, manager_id] });
     console.log('Employee added successfully!');
+    menu();
+}
+
+// Update an Employee's role
+const updateEmployeeRole = async () => {
+    const employees = await sequelize.query(`
+    SELECT employees.id, CONCAT(employees.first_name,' ', last_name) AS name, roles.title AS role
+    FROM employees
+    JOIN roles ON employees.role_id = roles.id
+    `);
+
+    const roles = await sequelize.query('SELECT * FROM roles');
+
+    const { employee_id, role_id } = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'employee_id',
+            message: 'Select the employee you\'d like to update:',
+            choices: employees[0].map((employee) => ({
+                name: `${employee.name} (${employee.role})`,
+                value: employee.id
+            }))
+        },
+        {
+            type: 'list',
+            name: 'role_id',
+            message: 'Select the employee\'s new role:',
+            choices: roles[0].map((role) => ({
+                name: role.title,
+                value: role.id
+            }))
+        }
+    ]);
+    await sequelize.query('UPDATE employees SET role_id = ? WHERE id = ?', {replacements: [role_id, employee_id]})
+    console.log('Employee\'s role has been updated succesfully');
     menu();
 }
 

@@ -37,6 +37,7 @@ const menu = async () => {
             addRole();
             break;
         case 'addEmployee':
+            addEmployee();
             break;
         case 'updateEmployeeRole':
             break;
@@ -118,13 +119,61 @@ const addRole = async () => {
         }
     ]);
     await sequelize.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)',
-    {
-        replacements: [title, salary, department_id]
-    });
+    { replacements: [title, salary, department_id] });
     console.log('Role added successfully.');
     menu();
 }
 
 // Add an employee
+const addEmployee = async () => {
+    const roles = await sequelize.query(`
+    SELECT roles.id, roles.title
+    FROM roles
+    JOIN departments ON roles.department_id = departments.id
+    `);
+
+    const employees = await sequelize.query(`
+    SELECT id, CONCAT(first_name,' ', last_name) AS name
+    FROM employees
+    `);
+
+    const { first_name, last_name, role_id, manager_id } = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: 'Enter the employee\'s first name:'
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: 'Enter the employee\'s last name:'
+        },
+        {
+            type: 'list',
+            name: 'role_id',
+            message: 'Select the employee\'s role:',
+            choices: roles[0].map((role) => ({
+                name: role.title,
+                value: role.id
+            }))
+        },
+        {
+            type: 'list',
+            name: 'manager_id',
+            message: 'Select the employee\'s manager:',
+            choices: [
+                { name: 'None', value: null },
+                ...employees[0].map((employee) => ({
+                    name: employee.name,
+                    value: employee.id
+                }))
+            ]
+        }
+    ]);
+    await sequelize.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
+    { replacements: [first_name, last_name, role_id, manager_id] });
+    console.log('Employee added successfully!');
+    menu();
+}
 
 menu();

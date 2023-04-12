@@ -1,6 +1,6 @@
 # Employee-Tracker
 Employee tracker using nodeJS and MySQL 
-![Alt text](assets/img/example.jpg "Title")
+![Alt text](Assets/img/example.jpg "Title")
 
 ## Usage
 To track/Update/add employee's to your database.
@@ -18,5 +18,5 @@ https://www.youtube.com/watch?v=MqCySpb_bhU
 Add some more functionality/Input checking/General QoL stuff
 
 ## Menu
-![Alt text](assets/img/menu.jpg "Title")
+![Alt text](Assets/img/menu.jpg "Title")
 
